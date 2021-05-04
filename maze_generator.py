@@ -4,7 +4,7 @@ import random
 from PIL import Image, ImageDraw
 import sys
 
-sys.setrecursionlimit(5000)
+sys.setrecursionlimit(10000)
 
 class Cell:
     def __init__(self, n):
@@ -33,7 +33,8 @@ class Draw:
 
     def draw_line(self, a, b):
         self.draw = ImageDraw.Draw(self.img)
-        self.draw.line((int(a % self.width) * 2 + 1, int(a / self.width) * 2 + 1, int(b % self.width) * 2 + 1, int(b / self.width) * 2 + 1), (255, 255, 255), 1)
+        point = lambda a: (int(a % self.width) * 2 + 1, int(a / self.width) * 2 + 1)
+        self.draw.line(point(a) + point(b), (255, 255, 255), 1)
 
 def deptfirst(cell, image):
     cell.set_visited()
@@ -51,10 +52,7 @@ def deptfirst(cell, image):
         image.draw_line(cell.n, move.n)
         #print(cell.cells_unvisited)
         cell.cells_unvisited[cell.cells_unvisited.index(move)] = None
-        try:
-            deptfirst(move, image)
-        except RecursionError:
-            print('Size too big!')
+        deptfirst(move, image)
 
 def gen_field(width, height):
     field = []
