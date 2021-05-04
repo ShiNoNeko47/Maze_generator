@@ -9,13 +9,8 @@ sys.setrecursionlimit(10000)
 class Cell:
     def __init__(self, n):
         self.n = n
-        self.walls = [True, True, True, True]
         self.cells_unvisited= [None, None, None, None]
         self.cells = [None, None, None, None]
-
-    def remove_wall(self, n):
-        self.walls[n] = False
-        self.cells_unvisited[n].walls[n - 2] = False # n - 2 oposite wall
 
     def set_visited(self):
         for i in range(4):
@@ -36,7 +31,7 @@ class Draw:
         point = lambda a: (int(a % self.width) * 2 + 1, int(a / self.width) * 2 + 1)
         self.draw.line(point(a) + point(b), (255, 255, 255), 1)
 
-def deptfirst(cell, image):
+def depth_first(cell, image):
     cell.set_visited()
     while True:
         neighbours = 4 - cell.cells_unvisited.count(None)
@@ -48,11 +43,10 @@ def deptfirst(cell, image):
                 moves.append(i)
         rand = int(random.random() * len(moves))
         move = moves[rand]
-        cell.remove_wall(cell.cells_unvisited.index(move))
         image.draw_line(cell.n, move.n)
         #print(cell.cells_unvisited)
         cell.cells_unvisited[cell.cells_unvisited.index(move)] = None
-        deptfirst(move, image)
+        depth_first(move, image)
 
 def gen_field(width, height):
     field = []
@@ -85,7 +79,7 @@ def main():
     field = gen_field(width, height)
     cell = field[int(y)][int(x)]
     image = Draw(width, height)
-    deptfirst(cell, image)
+    depth_first(cell, image)
     image.img.save(filename)
 
 if __name__ == '__main__':
