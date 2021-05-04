@@ -56,7 +56,8 @@ def main():
     width, height = int(width), int(height)
     field = gen_field(width, height)
 
-    x, y = input('start(x y): ').split()
+    x = random.random() * width
+    y = random.random() * height
     cell = field[int(y)][int(x)]
     image = Maze(width, height)
     depth_first(cell, image)
