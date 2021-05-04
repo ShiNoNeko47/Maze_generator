@@ -1,6 +1,10 @@
 #!/usr/bin/python
 
 import random
+from PIL import Image, ImageDraw
+import sys
+
+sys.setrecursionlimit(5000)
 
 class Cell:
     def __init__(self, n):
@@ -21,7 +25,17 @@ class Cell:
             except Exception:
                 pass
 
-def deptfirst(cell):
+class Draw:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.img = Image.new('RGB', (width * 2 + 1, height * 2 + 1))
+
+    def draw_line(self, a, b):
+        self.draw = ImageDraw.Draw(self.img)
+        self.draw.line((int(a % self.width) * 2 + 1, int(a / self.width) * 2 + 1, int(b % self.width) * 2 + 1, int(b / self.width) * 2 + 1), (255, 255, 255), 1)
+
+def deptfirst(cell, image):
     cell.set_visited()
     while True:
         neighbours = 4 - cell.cells_unvisited.count(None)
@@ -34,11 +48,13 @@ def deptfirst(cell):
         rand = int(random.random() * len(moves))
         move = moves[rand]
         cell.remove_wall(cell.cells_unvisited.index(move))
-        print(cell.n, move.n)
+        image.draw_line(cell.n, move.n)
         #print(cell.cells_unvisited)
-        print()
         cell.cells_unvisited[cell.cells_unvisited.index(move)] = None
-        deptfirst(move)
+        try:
+            deptfirst(move, image)
+        except RecursionError:
+            print('Size too big!')
 
 def gen_field(width, height):
     field = []
@@ -65,10 +81,14 @@ def gen_field(width, height):
 
 def main():
     width, height = input('width, height: ').split()
+    filename = 'maze' + width + 'x' + height + '.png'
+    width, height = int(width), int(height)
     x, y = input('start(x y): ').split()
-    field = gen_field(int(width), int(height))
+    field = gen_field(width, height)
     cell = field[int(y)][int(x)]
-    deptfirst(cell)
+    image = Draw(width, height)
+    deptfirst(cell, image)
+    image.img.save(filename)
 
 if __name__ == '__main__':
     main()
