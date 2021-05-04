@@ -3,33 +3,8 @@
 import random
 from PIL import Image, ImageDraw
 import sys
-
-sys.setrecursionlimit(10000)
-
-class Cell:
-    def __init__(self, n):
-        self.n = n
-        self.cells_unvisited= [None, None, None, None]
-        self.cells = [None, None, None, None]
-
-    def set_visited(self):
-        for i in range(4):
-            try:
-                self.cells[i].cells_unvisited[i - 2] = None
-                #print(self.cells_unvisited[i].n, self.cells_unvisited[i].cells_unvisited)
-            except Exception:
-                pass
-
-class Draw:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.img = Image.new('RGB', (width * 2 + 1, height * 2 + 1))
-
-    def draw_line(self, a, b):
-        self.draw = ImageDraw.Draw(self.img)
-        point = lambda a: (int(a % self.width) * 2 + 1, int(a / self.width) * 2 + 1)
-        self.draw.line(point(a) + point(b), (255, 255, 255), 1)
+from cell import Cell
+from maze import Maze
 
 def depth_first(cell, image):
     cell.set_visited()
@@ -72,13 +47,17 @@ def gen_field(width, height):
     return field
 
 def main():
+    sys.setrecursionlimit(10000)
+
     width, height = input('width, height: ').split()
     filename = 'maze' + width + 'x' + height + '.png'
+
     width, height = int(width), int(height)
-    x, y = input('start(x y): ').split()
     field = gen_field(width, height)
+
+    x, y = input('start(x y): ').split()
     cell = field[int(y)][int(x)]
-    image = Draw(width, height)
+    image = Maze(width, height)
     depth_first(cell, image)
     image.img.save(filename)
 
