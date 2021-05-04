@@ -18,10 +18,11 @@ def depth_first(cell, image):
                 moves.append(i)
         rand = int(random.random() * len(moves))
         move = moves[rand]
-        image.draw_line(cell.n, move.n)
+        image.draw_line(cell.n, move.n, (255, 0, 0))
         #print(cell.cells_unvisited)
         cell.cells_unvisited[cell.cells_unvisited.index(move)] = None
         depth_first(move, image)
+        image.draw_line(cell.n, move.n, (255, 255, 255))
 
 def gen_field(width, height):
     field = []
