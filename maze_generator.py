@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw
 import sys
 from cell import Cell
 from maze import Maze
+import pygame
 
 def depth_first(cell, image):
     cell.set_visited()
@@ -48,20 +49,29 @@ def gen_field(width, height):
     return field
 
 def main():
-    sys.setrecursionlimit(10000)
+    sys.setrecursionlimit(1000000)
 
     width, height = input('width, height: ').split()
     filename = 'maze' + width + 'x' + height + '.png'
-
     width, height = int(width), int(height)
+
+    pygame.init()
+    window = pygame.display.set_mode(((width * 2 + 1) * 5, (height * 2 + 1) * 5))
+
     field = gen_field(width, height)
 
     x = random.random() * width
     y = random.random() * height
     cell = field[int(y)][int(x)]
-    image = Maze(width, height)
+    image = Maze(width, height, window)
     depth_first(cell, image)
     image.img.save(filename)
+    loop = True
+    while loop:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                loop = False
+
 
 if __name__ == '__main__':
     main()
