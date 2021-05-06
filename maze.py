@@ -2,19 +2,16 @@ from PIL import Image, ImageDraw
 import pygame
 
 class Maze:
-    def __init__(self, width, height):
+    def __init__(self, width, height, window):
         self.width = width
         self.height = height
         self.img = Image.new('RGB', (width * 2 + 1, height * 2 + 1))
+        self.window = window
 
         try:
-            import pygame
             self.visual = True
         except ImportError:
             self.visual = False
-
-        pygame.init()
-        self.window = pygame.display.set_mode(((width * 2 + 1) * 5, (height * 2 + 1) * 5))
 
     def draw_line(self, a, b, color):
         self.draw = ImageDraw.Draw(self.img)
