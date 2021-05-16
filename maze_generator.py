@@ -20,8 +20,10 @@ def depth_first(cell, image):
         rand = int(random.random() * len(moves))
         move = moves[rand]
         image.draw_line(cell.n, move.n, (255, 0, 0))
-        #print(cell.cells_unvisited)
         cell.cells_unvisited[cell.cells_unvisited.index(move)] = None
+        cell.connections.append(move)
+        move.connections.append(cell)
+        print(cell.n, cell.connections)
         depth_first(move, image)
         image.draw_line(cell.n, move.n, (255, 255, 255))
 
@@ -31,6 +33,7 @@ def gen_field(width, height):
         field.append(list())
         for j in range(width):
             field[i].append(Cell(i * width + j))
+            nmax = i * width + j
     for i in range(height):
         for j in range(width):
             if i != 0:
@@ -46,7 +49,22 @@ def gen_field(width, height):
                 field[i][j].cells_unvisited[3] = field[i][j + 1]
                 field[i][j].cells[3] = field[i][j + 1]
             #print(field[i][j].cells_unvisited)
-    return field
+    return field, nmax
+
+def draw_path(cell, nmax, image, source):
+    #print(len(cell.connections))
+    if cell.n == nmax:
+        print(cell.n, 1)
+        return 1
+    if len(cell.connections) == 1 and cell.n != 0:
+        print(cell.n, 0)
+        return 0
+    for connection in cell.connections:
+        if connection != source:
+            if draw_path(connection, nmax, image, cell) == 1:
+                image.draw_line(cell.n, connection.n, (255, 0, 0))
+                return 1
+    return 0
 
 def main():
     sys.setrecursionlimit(1000000)
@@ -58,7 +76,8 @@ def main():
     pygame.init()
     window = pygame.display.set_mode(((width * 2 + 1) * 5, (height * 2 + 1) * 5))
 
-    field = gen_field(width, height)
+    field, nmax = gen_field(width, height)
+    print(nmax)
 
     x = random.random() * width
     y = random.random() * height
@@ -66,12 +85,13 @@ def main():
     image = Maze(width, height, window)
     depth_first(cell, image)
     image.img.save(filename)
+    draw_path(field[0][0], nmax, image, field[0][0])
+    print('done')
     loop = True
     while loop:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 loop = False
-
 
 if __name__ == '__main__':
     main()
